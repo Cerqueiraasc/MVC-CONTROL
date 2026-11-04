@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Gastos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>💰 Controle de Gastos</h1>
+            <p class="sub">Aplicação Flask em arquitetura MVC</p>
+        </header>
+
+        {% with mensagens = get_flashed_messages() %}
+            {% for m in mensagens %}<div class="aviso">{{ m }}</div>{% endfor %}
+        {% endwith %}
+
+        {% block conteudo %}{% endblock %}
+
+        <footer>Trabalho MVC · Arthur Cerqueira &amp; Elias Viana</footer>
+    </main>
+</body>
+</html>
