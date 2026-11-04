@@ -6,7 +6,7 @@
 Aplicação web para registrar gastos pessoais, marcar como pagos, filtrar por categoria e ver os totais. Feita em Python com Flask + SQLite, organizada na arquitetura **MVC**.
 
 ## Funcionalidades
-- Cadastrar gasto (descrição, valor, categoria e data)
+- Cadastrar gasto (descrição, valor, categoria, data e se já foi pago)
 - Visualizar gastos em tabela, do mais recente ao mais antigo
 - Editar gasto
 - Marcar como pago / pendente

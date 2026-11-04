@@ -118,6 +118,9 @@ input:hover, select:hover { border-color: var(--linha-forte); }
 input:focus, select:focus { outline: none; border-color: var(--destaque); }
 input::placeholder { color: #74767c; }
 
+.form .campo-check { display: flex; align-items: center; gap: 9px; color: var(--texto); font-size: 14px; cursor: pointer; }
+.campo-check input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; accent-color: var(--destaque); cursor: pointer; }
+
 .campo-valor input {
     min-height: 54px;
     padding: 4px 0;

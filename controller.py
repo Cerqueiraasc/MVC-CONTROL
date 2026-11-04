@@ -38,7 +38,8 @@ def validar_formulario(form):
         data_gasto = datetime.strptime(form.get("data", ""), "%Y-%m-%d").date()
     except ValueError:
         data_gasto = date.today()
-    return {"descricao": descricao, "valor": valor, "categoria": categoria, "data": data_gasto}, None
+    pago = "pago" in form  # O navegador só envia o checkbox quando ele está marcado
+    return {"descricao": descricao, "valor": valor, "categoria": categoria, "data": data_gasto, "pago": pago}, None
 
 
 def rotas(app):

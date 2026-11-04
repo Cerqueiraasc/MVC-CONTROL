@@ -16,6 +16,7 @@
             </label>
             <label>Data <input name="data" type="date" value="{{ gasto.data.isoformat() }}"></label>
         </div>
+        <label class="campo-check"><input type="checkbox" name="pago" {% if gasto.pago %}checked{% endif %}> Já foi pago</label>
         <div class="botoes">
             <button>Salvar alterações</button>
             <a class="botao-secundario" href="/">Cancelar</a>
