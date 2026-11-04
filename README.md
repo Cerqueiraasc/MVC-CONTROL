@@ -1,4 +1,4 @@
-# Controle de Gastos — Prática MVC com Flask
+# Troco: controle de gastos (Prática MVC com Flask)
 
 **Dupla:** Arthur Silva de Cerqueira e Elias Viana
 **Disciplina:** Modelos, Métodos e Técnicas da Engenharia de Software — Aula 8
@@ -38,6 +38,7 @@ controle-gastos/
 │   ├── index.html
 │   └── editar.html
 └── static/
+    ├── logo.svg
     └── style.css
 ```
 

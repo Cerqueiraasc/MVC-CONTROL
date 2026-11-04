@@ -1,73 +1,102 @@
 {% extends "base.html" %}
 {% block conteudo %}
 
-<!-- Cards de resumo (valores calculados no Controller) -->
-<section class="cards">
-    <div class="card"><span>Total</span><strong>{{ resumo.total|brl }}</strong></div>
-    <div class="card ok"><span>Pago</span><strong>{{ resumo.pago|brl }}</strong></div>
-    <div class="card pend"><span>Pendente</span><strong>{{ resumo.pendente|brl }}</strong></div>
-</section>
-
-<!-- Formulário de cadastro: envia para a rota /adicionar (POST) -->
-<form class="form" action="/adicionar" method="post">
-    <input name="descricao" placeholder="Descrição (ex.: Almoço)" required>
-    <input name="valor" type="number" step="0.01" min="0.01" placeholder="Valor" required>
-    <select name="categoria">
-        {% for c in categorias %}<option>{{ c }}</option>{% endfor %}
-    </select>
-    <input name="data" type="date" value="{{ hoje }}">
-    <button>Adicionar</button>
-</form>
-
-<!-- Filtro por categoria (GET na rota /) -->
-<form class="filtro" method="get" action="/">
-    <label>Filtrar:</label>
-    <select name="categoria" onchange="this.form.submit()">
-        <option value="">Todas</option>
-        {% for c in categorias %}
-            <option {% if c == filtro %}selected{% endif %}>{{ c }}</option>
-        {% endfor %}
-    </select>
-</form>
-
-<!-- Lista de gastos -->
-{% if gastos %}
-<table>
-    <thead>
-        <tr><th>Data</th><th>Descrição</th><th>Categoria</th><th class="num">Valor</th><th>Status</th><th></th></tr>
-    </thead>
-    <tbody>
-    {% for g in gastos %}
-        <tr class="{{ 'pago' if g.pago }}">
-            <td>{{ g.data.strftime('%d/%m/%Y') }}</td>
-            <td>{{ g.descricao }}</td>
-            <td><span class="tag">{{ g.categoria }}</span></td>
-            <td class="num">{{ g.valor|brl }}</td>
-            <td><a class="status" href="/pagar/{{ g.id }}">{{ '✔ Pago' if g.pago else '⏳ Pendente' }}</a></td>
-            <td class="acoes">
-                <a href="/editar/{{ g.id }}" title="Editar">✏️</a>
-                <a href="/deletar/{{ g.id }}" title="Excluir" onclick="return confirm('Excluir este gasto?')">❌</a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-    <p class="vazio">Nenhum gasto cadastrado ainda.</p>
-{% endif %}
-
-<!-- Total por categoria (calculado no Controller) -->
-{% if resumo.por_categoria %}
-<section class="categorias">
-    <h2>Por categoria</h2>
-    {% for cat, val in resumo.por_categoria.items() %}
-        <div class="barra">
-            <span>{{ cat }}</span>
-            <div class="trilho"><div class="preenche" style="width: {{ (val / resumo.total * 100)|round(1) }}%"></div></div>
-            <strong>{{ val|brl }}</strong>
+<!-- Resumo (valores calculados no Controller) -->
+<section class="extrato">
+    <div class="extrato-total">
+        <span>Total de gastos{% if filtro in categorias %} em {{ filtro }}{% endif %}</span>
+        <strong>{{ resumo.total|brl }}</strong>
+    </div>
+    <div class="extrato-divisao">
+        <div class="proporcao" aria-hidden="true">
+            {% if resumo.total %}<i style="width: {{ (resumo.pago / resumo.total * 100)|round(1) }}%"></i>{% endif %}
         </div>
-    {% endfor %}
+        <div class="extrato-valores">
+            <div><span>Pago</span><strong class="verde">{{ resumo.pago|brl }}</strong></div>
+            <div><span>A pagar</span><strong class="vermelho">{{ resumo.pendente|brl }}</strong></div>
+        </div>
+    </div>
 </section>
-{% endif %}
+
+<div class="grade">
+    <!-- Lista de gastos -->
+    <section class="lista">
+        <!-- Filtro por categoria (GET na rota /) -->
+        <nav class="abas" aria-label="Filtrar por categoria">
+            <a href="{{ url_for('index') }}" class="{{ 'ativa' if filtro not in categorias }}">Todos</a>
+            {% for c in categorias %}
+                <a href="{{ url_for('index', categoria=c) }}" class="{{ 'ativa' if c == filtro }}">{{ c }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if gastos %}
+        <table>
+            <thead>
+                <tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Status</th><th class="num">Valor</th><th><span class="oculto">Ações</span></th></tr>
+            </thead>
+            <tbody>
+            {% for g in gastos %}
+                <tr>
+                    <td class="col-data">{{ g.data.strftime('%d/%m/%y') }}</td>
+                    <td class="col-desc">
+                        {{ g.descricao }}
+                        <small>{{ g.data.strftime('%d/%m/%y') }} · {{ g.categoria }}</small>
+                    </td>
+                    <td class="col-cat">{{ g.categoria }}</td>
+                    <td class="col-status">
+                        <a class="status {{ 'pago' if g.pago else 'pendente' }}" href="/pagar/{{ g.id }}" title="Alternar status"><i></i>{{ 'Pago' if g.pago else 'A pagar' }}</a>
+                    </td>
+                    <td class="num col-valor">{{ g.valor|brl }}</td>
+                    <td class="acoes">
+                        <a href="/editar/{{ g.id }}" aria-label="Editar {{ g.descricao }}">Editar</a>
+                        <a class="perigo" href="/deletar/{{ g.id }}" aria-label="Excluir {{ g.descricao }}" onclick="return confirm('Excluir este gasto?')">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="vazio">{{ 'Nenhum gasto nesta categoria.' if filtro in categorias else 'Nenhum gasto cadastrado ainda.' }}</p>
+        {% endif %}
+    </section>
+
+    <aside class="lateral">
+        <!-- Formulário de cadastro: envia para a rota /adicionar (POST) -->
+        <section class="novo">
+            <h2>Novo gasto</h2>
+            <form class="form" action="/adicionar" method="post">
+                <label class="campo-valor">Valor em reais <input name="valor" type="number" step="0.01" min="0.01" placeholder="0,00" required></label>
+                <label>Descrição <input name="descricao" placeholder="Almoço, mercado, aluguel…" maxlength="120" required></label>
+                <div class="duas-colunas">
+                    <label>Categoria
+                        <select name="categoria">
+                            {% for c in categorias %}<option>{{ c }}</option>{% endfor %}
+                        </select>
+                    </label>
+                    <label>Data <input name="data" type="date" value="{{ hoje }}"></label>
+                </div>
+                <button>Registrar gasto</button>
+            </form>
+        </section>
+
+        <!-- Total por categoria (calculado no Controller) -->
+        {% if resumo.por_categoria and filtro not in categorias %}
+        <section class="por-categoria">
+            <h2>Para onde foi</h2>
+            <div class="categorias">
+            {% for cat, val in resumo.por_categoria.items() %}
+                {% set pct = (val / resumo.total * 100)|round(1) %}
+                <div class="barra">
+                    <span>{{ cat }}</span>
+                    <strong>{{ val|brl }}</strong>
+                    <div class="trilho"><div class="preenche" style="width: {{ pct }}%"></div></div>
+                    <small>{{ pct|string|replace('.', ',') }}%</small>
+                </div>
+            {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </aside>
+</div>
 
 {% endblock %}

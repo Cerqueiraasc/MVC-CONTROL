@@ -3,23 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Gastos</title>
+    <title>Troco · Controle de gastos</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <main class="container">
-        <header>
-            <h1>💰 Controle de Gastos</h1>
-            <p class="sub">Aplicação Flask em arquitetura MVC</p>
-        </header>
+    <header class="topo">
+        <a class="marca" href="/" aria-label="Troco, página inicial">
+            <img src="{{ url_for('static', filename='logo.svg') }}" width="26" height="26" alt="">
+            <span>troco</span>
+        </a>
+    </header>
 
-        {% with mensagens = get_flashed_messages() %}
-            {% for m in mensagens %}<div class="aviso">{{ m }}</div>{% endfor %}
-        {% endwith %}
+    {% with mensagens = get_flashed_messages() %}
+        {% for m in mensagens %}<div class="aviso" role="status">{{ m }}</div>{% endfor %}
+    {% endwith %}
 
+    <main class="conteudo">
         {% block conteudo %}{% endblock %}
-
-        <footer>Trabalho MVC · Arthur Cerqueira &amp; Elias Viana</footer>
     </main>
+
+    <footer>Trabalho MVC com Flask · Arthur Cerqueira &amp; Elias Viana</footer>
 </body>
 </html>
